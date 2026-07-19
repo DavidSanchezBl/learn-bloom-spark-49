@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useAuth, type CustomCourse } from "@/lib/auth";
-import { COURSES } from "@/lib/courses";
+import { COURSES, formatL } from "@/lib/courses";
 import { Plus, Trash2, Sparkles, BookOpen, GraduationCap } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({ component: Dashboard });
