@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useAuth, type CustomCourse } from "@/lib/auth";
-import { COURSES } from "@/lib/courses";
+import { COURSES, formatL } from "@/lib/courses";
 import { Plus, Trash2, Sparkles, BookOpen, GraduationCap } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({ component: Dashboard });
@@ -57,13 +57,15 @@ function ExploreTab() {
         const enrolled = enrolledIds.includes(c.id);
         return (
           <Card key={c.id} className="overflow-hidden transition hover:shadow-md">
-            <div className="h-28" style={{ background: c.color }} />
+            <div className="grid h-28 place-items-center" style={{ background: "var(--brand-soft)", color: "var(--primary)" }}>
+              <GraduationCap className="h-8 w-8" />
+            </div>
             <CardContent className="p-5">
               <p className="text-xs text-muted-foreground">{c.category} · {c.level}</p>
               <h3 className="mt-1 font-semibold">{c.title}</h3>
               <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{c.description}</p>
               <div className="mt-4 flex items-center justify-between">
-                <span className="text-lg font-bold text-primary">${c.price}</span>
+                <span className="text-lg font-bold text-primary">{formatL(c.price)}</span>
                 <Button size="sm" disabled={enrolled} onClick={() => enroll(c.id)}>
                   {enrolled ? "Inscrito ✓" : "Inscribirme"}
                 </Button>
@@ -93,7 +95,9 @@ function LearningTab() {
       {mine.map(c => (
         <Card key={c.id}>
           <CardContent className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 p-4">
-            <div className="h-14 w-14 shrink-0 rounded-lg" style={{ background: c.color }} />
+            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-lg text-primary" style={{ background: "var(--brand-soft)" }}>
+              <BookOpen className="h-5 w-5" />
+            </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">{c.category}</p>
               <p className="truncate font-semibold">{c.title}</p>
@@ -141,7 +145,7 @@ function TeachTab() {
             <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 p-4">
               <p className="text-sm font-medium">Desbloquea Instructor Pro</p>
               <p className="mt-1 text-xs text-muted-foreground">Diseña tu espacio libremente y publica cursos ilimitados.</p>
-              <Button size="sm" className="mt-3" onClick={upgradeToPro}>Activar Pro $9.99/mes</Button>
+              <Button size="sm" className="mt-3" onClick={upgradeToPro}>Activar Pro {formatL(250)}/mes</Button>
             </div>
           )}
           <form onSubmit={submit} className={`mt-4 space-y-3 ${!isPro ? "opacity-60 pointer-events-none" : ""}`}>
@@ -159,8 +163,8 @@ function TeachTab() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label>Precio (USD)</Label>
-                <Input type="number" step="0.01" min="0" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
+                <Label>Precio (Lempiras)</Label>
+                <Input type="number" step="1" min="0" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} placeholder="L. 250" />
               </div>
               <div className="space-y-1.5">
                 <Label>Color</Label>
@@ -192,11 +196,13 @@ function TeachTab() {
             {customCourses.map(c => (
               <Card key={c.id}>
                 <CardContent className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-4">
-                  <div className="h-12 w-12 shrink-0 rounded-md" style={{ background: c.color }} />
+                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-md text-primary" style={{ background: c.color }}>
+                    <Sparkles className="h-4 w-4" />
+                  </div>
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">{c.category}</p>
                     <p className="truncate font-medium">{c.title}</p>
-                    <p className="text-sm font-semibold text-primary">${c.price.toFixed(2)}</p>
+                    <p className="text-sm font-semibold text-primary">{formatL(c.price)}</p>
                   </div>
                   <div className="flex gap-1">
                     <Button size="sm" variant="outline" onClick={() => startEdit(c)}>Editar</Button>

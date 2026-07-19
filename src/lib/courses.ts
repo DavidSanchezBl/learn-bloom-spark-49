@@ -3,22 +3,30 @@ export interface Course {
   title: string;
   category: string;
   instructor: string;
-  price: number;
+  price: number; // en Lempiras (L.)
   hours: number;
   level: "Principiante" | "Intermedio" | "Avanzado";
   description: string;
-  color: string;
+  icon: string; // font-awesome-ish key mapped in UI
+  tag?: string;
+  rating?: number;
 }
 
 export const COURSES: Course[] = [
-  { id: 1, title: "Introducción a Python", category: "Programación", instructor: "Ana Reyes", price: 12.99, hours: 14, level: "Principiante", description: "Domina los fundamentos de Python con proyectos reales.", color: "oklch(0.85 0.08 220)" },
-  { id: 2, title: "Diseño UI/UX con Figma", category: "Diseño", instructor: "Carlos Mendoza", price: 15.5, hours: 18, level: "Intermedio", description: "Crea interfaces modernas y prototipos interactivos.", color: "oklch(0.86 0.09 320)" },
-  { id: 3, title: "Marketing Digital 360°", category: "Negocios", instructor: "Lucía Paredes", price: 18.0, hours: 22, level: "Intermedio", description: "Estrategias de redes, SEO y publicidad paga.", color: "oklch(0.88 0.09 80)" },
-  { id: 4, title: "Fotografía con Celular", category: "Arte", instructor: "Diego Fuentes", price: 9.99, hours: 8, level: "Principiante", description: "Toma fotos profesionales usando solo tu smartphone.", color: "oklch(0.86 0.08 40)" },
-  { id: 5, title: "Inglés Conversacional B1", category: "Idiomas", instructor: "Maria López", price: 14.75, hours: 30, level: "Intermedio", description: "Fluidez real para conversaciones cotidianas.", color: "oklch(0.87 0.08 160)" },
-  { id: 6, title: "Excel Avanzado y Dashboards", category: "Productividad", instructor: "Roberto Cáceres", price: 11.5, hours: 12, level: "Avanzado", description: "Fórmulas, tablas dinámicas y visualización de datos.", color: "oklch(0.87 0.08 140)" },
-  { id: 7, title: "Guitarra desde Cero", category: "Música", instructor: "Sofía Ramírez", price: 10.99, hours: 20, level: "Principiante", description: "Aprende acordes y tus primeras canciones.", color: "oklch(0.87 0.09 20)" },
-  { id: 8, title: "Cocina Saludable", category: "Estilo de Vida", instructor: "Chef Julio Mora", price: 8.99, hours: 10, level: "Principiante", description: "Recetas rápidas, nutritivas y económicas.", color: "oklch(0.88 0.08 110)" },
-  { id: 9, title: "React y TypeScript Moderno", category: "Programación", instructor: "Andrés Núñez", price: 19.99, hours: 26, level: "Avanzado", description: "Construye apps SPA con hooks, routing y estado global.", color: "oklch(0.85 0.09 260)" },
-  { id: 10, title: "Finanzas Personales Inteligentes", category: "Negocios", instructor: "Patricia Solís", price: 13.5, hours: 9, level: "Principiante", description: "Presupuesto, ahorro e inversión desde cero.", color: "oklch(0.88 0.08 200)" },
+  { id: 1, title: "Inglés para call centers", category: "Idiomas", instructor: "María F.", price: 350, hours: 16, level: "Intermedio", description: "Domina el inglés conversacional con enfoque en atención al cliente.", icon: "headset", tag: "Más popular", rating: 4.9 },
+  { id: 2, title: "Reparación de celulares", category: "Oficio técnico", instructor: "Carlos R.", price: 280, hours: 12, level: "Principiante", description: "Aprende a diagnosticar y reparar fallas comunes en smartphones.", icon: "tools", tag: "Oficio técnico", rating: 4.8 },
+  { id: 3, title: "Matemáticas para ingeniería", category: "Nivelación", instructor: "Laura G.", price: 320, hours: 20, level: "Intermedio", description: "Refuerza tus bases matemáticas con ejercicios prácticos.", icon: "chart", tag: "Nivelación", rating: 4.7 },
+  { id: 4, title: "Diseño gráfico con Canva", category: "Diseño", instructor: "Diego M.", price: 220, hours: 10, level: "Principiante", description: "Crea piezas visuales profesionales sin experiencia previa.", icon: "brush", rating: 4.8 },
+  { id: 5, title: "Introducción a Python", category: "Programación", instructor: "Ana Reyes", price: 400, hours: 18, level: "Principiante", description: "Domina los fundamentos de Python con proyectos reales.", icon: "code", rating: 4.9 },
+  { id: 6, title: "Excel avanzado y dashboards", category: "Productividad", instructor: "Roberto C.", price: 260, hours: 12, level: "Avanzado", description: "Fórmulas, tablas dinámicas y visualización de datos.", icon: "calculator", rating: 4.7 },
+  { id: 7, title: "Marketing digital 360°", category: "Negocios", instructor: "Lucía Paredes", price: 480, hours: 22, level: "Intermedio", description: "Estrategias de redes, SEO y publicidad paga.", icon: "chart", rating: 4.6 },
+  { id: 8, title: "Fotografía con celular", category: "Arte", instructor: "Diego Fuentes", price: 200, hours: 8, level: "Principiante", description: "Toma fotos profesionales usando solo tu smartphone.", icon: "brush", rating: 4.8 },
+  { id: 9, title: "Guitarra desde cero", category: "Música", instructor: "Sofía Ramírez", price: 240, hours: 14, level: "Principiante", description: "Aprende acordes y tus primeras canciones.", icon: "brush", rating: 4.7 },
+  { id: 10, title: "Finanzas personales", category: "Negocios", instructor: "Patricia Solís", price: 300, hours: 9, level: "Principiante", description: "Presupuesto, ahorro e inversión desde cero.", icon: "chart", rating: 4.9 },
 ];
+
+export const PRO_PRICE_LEMPIRAS = 250;
+
+export function formatL(v: number): string {
+  return `L. ${v.toLocaleString("es-HN", { maximumFractionDigits: 0 })}`;
+}

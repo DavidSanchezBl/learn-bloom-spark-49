@@ -82,7 +82,7 @@ function RegisterPage() {
                 <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-primary/40 bg-primary/5 p-3">
                   <input type="checkbox" checked={pro} onChange={e => setPro(e.target.checked)} className="mt-1" />
                   <div>
-                    <p className="text-sm font-semibold">Activar Instructor Pro — $9.99/mes</p>
+                    <p className="text-sm font-semibold">Activar Instructor Pro — L. 250/mes</p>
                     <p className="text-xs text-muted-foreground">Cursos ilimitados, editor libre y define tus precios.</p>
                   </div>
                 </label>
