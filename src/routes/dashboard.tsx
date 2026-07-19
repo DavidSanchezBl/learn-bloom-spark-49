@@ -57,13 +57,15 @@ function ExploreTab() {
         const enrolled = enrolledIds.includes(c.id);
         return (
           <Card key={c.id} className="overflow-hidden transition hover:shadow-md">
-            <div className="h-28" style={{ background: c.color }} />
+            <div className="grid h-28 place-items-center" style={{ background: "var(--brand-soft)", color: "var(--primary)" }}>
+              <GraduationCap className="h-8 w-8" />
+            </div>
             <CardContent className="p-5">
               <p className="text-xs text-muted-foreground">{c.category} · {c.level}</p>
               <h3 className="mt-1 font-semibold">{c.title}</h3>
               <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{c.description}</p>
               <div className="mt-4 flex items-center justify-between">
-                <span className="text-lg font-bold text-primary">${c.price}</span>
+                <span className="text-lg font-bold text-primary">{formatL(c.price)}</span>
                 <Button size="sm" disabled={enrolled} onClick={() => enroll(c.id)}>
                   {enrolled ? "Inscrito ✓" : "Inscribirme"}
                 </Button>
