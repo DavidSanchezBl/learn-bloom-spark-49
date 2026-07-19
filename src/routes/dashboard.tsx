@@ -163,8 +163,8 @@ function TeachTab() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label>Precio (USD)</Label>
-                <Input type="number" step="0.01" min="0" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
+                <Label>Precio (Lempiras)</Label>
+                <Input type="number" step="1" min="0" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} placeholder="L. 250" />
               </div>
               <div className="space-y-1.5">
                 <Label>Color</Label>
