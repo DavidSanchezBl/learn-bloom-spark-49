@@ -196,11 +196,13 @@ function TeachTab() {
             {customCourses.map(c => (
               <Card key={c.id}>
                 <CardContent className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-4">
-                  <div className="h-12 w-12 shrink-0 rounded-md" style={{ background: c.color }} />
+                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-md text-primary" style={{ background: c.color }}>
+                    <Sparkles className="h-4 w-4" />
+                  </div>
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">{c.category}</p>
                     <p className="truncate font-medium">{c.title}</p>
-                    <p className="text-sm font-semibold text-primary">${c.price.toFixed(2)}</p>
+                    <p className="text-sm font-semibold text-primary">{formatL(c.price)}</p>
                   </div>
                   <div className="flex gap-1">
                     <Button size="sm" variant="outline" onClick={() => startEdit(c)}>Editar</Button>
