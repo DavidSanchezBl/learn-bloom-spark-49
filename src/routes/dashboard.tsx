@@ -145,7 +145,7 @@ function TeachTab() {
             <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 p-4">
               <p className="text-sm font-medium">Desbloquea Instructor Pro</p>
               <p className="mt-1 text-xs text-muted-foreground">Diseña tu espacio libremente y publica cursos ilimitados.</p>
-              <Button size="sm" className="mt-3" onClick={upgradeToPro}>Activar Pro $9.99/mes</Button>
+              <Button size="sm" className="mt-3" onClick={upgradeToPro}>Activar Pro {formatL(250)}/mes</Button>
             </div>
           )}
           <form onSubmit={submit} className={`mt-4 space-y-3 ${!isPro ? "opacity-60 pointer-events-none" : ""}`}>
