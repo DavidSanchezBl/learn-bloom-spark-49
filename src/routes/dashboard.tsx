@@ -95,7 +95,9 @@ function LearningTab() {
       {mine.map(c => (
         <Card key={c.id}>
           <CardContent className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 p-4">
-            <div className="h-14 w-14 shrink-0 rounded-lg" style={{ background: c.color }} />
+            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-lg text-primary" style={{ background: "var(--brand-soft)" }}>
+              <BookOpen className="h-5 w-5" />
+            </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">{c.category}</p>
               <p className="truncate font-semibold">{c.title}</p>
