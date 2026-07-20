@@ -10,7 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useAuth, type CustomCourse } from "@/lib/auth";
 import { COURSES, formatL } from "@/lib/courses";
-import { Plus, Trash2, Sparkles, BookOpen, GraduationCap } from "lucide-react";
+import { Plus, Trash2, Sparkles, BookOpen, GraduationCap, UserCircle2, Check } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({ component: Dashboard });
 
@@ -38,11 +38,13 @@ function Dashboard() {
             <TabsTrigger value="explore"><BookOpen className="mr-2 h-4 w-4" />Explorar cursos</TabsTrigger>
             <TabsTrigger value="learning"><GraduationCap className="mr-2 h-4 w-4" />Mis aprendizajes</TabsTrigger>
             {isInstructor && <TabsTrigger value="teach"><Sparkles className="mr-2 h-4 w-4" />Mi espacio</TabsTrigger>}
+            <TabsTrigger value="profile"><UserCircle2 className="mr-2 h-4 w-4" />Mi perfil</TabsTrigger>
           </TabsList>
 
           <TabsContent value="explore" className="mt-6"><ExploreTab /></TabsContent>
           <TabsContent value="learning" className="mt-6"><LearningTab /></TabsContent>
           {isInstructor && <TabsContent value="teach" className="mt-6"><TeachTab /></TabsContent>}
+          <TabsContent value="profile" className="mt-6"><ProfileTab /></TabsContent>
         </Tabs>
       </div>
     </div>

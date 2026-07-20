@@ -36,9 +36,10 @@ export function Navbar() {
               <span className="hidden rounded-full bg-muted px-3 py-1 text-xs font-medium sm:inline">
                 {user.role === "instructor_pro" ? "Instructor Pro" : user.role === "instructor" ? "Instructor" : "Estudiante"}
               </span>
-              <Link to="/dashboard" search={{ tab: "profile" } as never} className="hidden text-sm text-muted-foreground hover:text-foreground sm:inline">
-                Perfil
+              <Link to="/dashboard" className="hidden text-sm text-muted-foreground hover:text-foreground sm:inline">
+                Mi perfil
               </Link>
+
               <Button variant="ghost" size="sm" onClick={() => setConfirmOpen(true)}>
                 <LogOut className="mr-1 h-4 w-4" />
                 <span>Cerrar sesión</span>
