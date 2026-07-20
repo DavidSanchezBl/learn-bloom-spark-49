@@ -19,6 +19,7 @@ interface AuthState {
   login: (email: string, password: string) => { ok: boolean; error?: string };
   logout: () => void;
   upgradeToPro: () => void;
+  updateProfile: (patch: { fullName?: string; age?: number; password?: string }) => { ok: boolean; error?: string };
   enrolledIds: number[];
   enroll: (id: number) => void;
   customCourses: CustomCourse[];
@@ -109,6 +110,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         writeUsers(users);
         setUser({ ...user, role: "instructor_pro" });
       }
+    },
+    updateProfile: (patch) => {
+      if (!user) return { ok: false, error: "No hay sesión" };
+      const users = readUsers();
+      const idx = users.findIndex(u => u.email === user.email);
+      if (idx < 0) return { ok: false, error: "Usuario no encontrado" };
+      if (patch.fullName !== undefined) users[idx].fullName = patch.fullName;
+      if (patch.age !== undefined) users[idx].age = patch.age;
+      if (patch.password !== undefined && patch.password.length > 0) users[idx].password = patch.password;
+      writeUsers(users);
+      const { password: _p, ...rest } = users[idx];
+      setUser(rest);
+      return { ok: true };
     },
     enrolledIds,
     enroll: (id) => {
