@@ -8,11 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useAuth, type CustomCourse } from "@/lib/auth";
-import { COURSES, formatL } from "@/lib/courses";
-import { Plus, Trash2, Sparkles, BookOpen, GraduationCap, UserCircle2, Check } from "lucide-react";
+import { COURSES, formatL, type Course } from "@/lib/courses";
+import { Plus, Trash2, Sparkles, BookOpen, GraduationCap, UserCircle2, Check, Clock, CalendarClock, Users, Star, PlayCircle, FileText, LogOut } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({ component: Dashboard });
+
 
 function Dashboard() {
   const { user } = useAuth();
@@ -52,36 +55,63 @@ function Dashboard() {
 }
 
 function ExploreTab() {
-  const { enroll, enrolledIds } = useAuth();
+  const { enrolledIds } = useAuth();
+  const [selected, setSelected] = useState<Course | null>(null);
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {COURSES.map(c => {
-        const enrolled = enrolledIds.includes(c.id);
-        return (
-          <Card key={c.id} className="overflow-hidden transition hover:shadow-md">
-            <div className="grid h-28 place-items-center" style={{ background: "var(--brand-soft)", color: "var(--primary)" }}>
-              <GraduationCap className="h-8 w-8" />
-            </div>
-            <CardContent className="p-5">
-              <p className="text-xs text-muted-foreground">{c.category} · {c.level}</p>
-              <h3 className="mt-1 font-semibold">{c.title}</h3>
-              <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{c.description}</p>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-lg font-bold text-primary">{formatL(c.price)}</span>
-                <Button size="sm" disabled={enrolled} onClick={() => enroll(c.id)}>
-                  {enrolled ? "Inscrito ✓" : "Inscribirme"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
+    <>
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {COURSES.map(c => {
+          const enrolled = enrolledIds.includes(c.id);
+          return (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => setSelected(c)}
+              className="group text-left"
+            >
+              <Card className="h-full overflow-hidden transition group-hover:shadow-md group-hover:-translate-y-0.5">
+                <div className="grid h-28 place-items-center" style={{ background: "var(--brand-soft)", color: "var(--primary)" }}>
+                  <GraduationCap className="h-8 w-8" />
+                </div>
+                <CardContent className="p-5">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">{c.category} · {c.level}</p>
+                    {c.rating && (
+                      <span className="flex items-center gap-1 text-xs font-medium text-amber-600">
+                        <Star className="h-3 w-3 fill-current" />{c.rating}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="mt-1 font-semibold">{c.title}</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Por {c.instructor}</p>
+                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{c.description}</p>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{c.hours} h</span>
+                    <span className="inline-flex items-center gap-1">
+                      <CalendarClock className="h-3 w-3" />
+                      {c.flexible ? "Horarios flexibles" : c.schedule}
+                    </span>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-lg font-bold text-primary">{formatL(c.price)}</span>
+                    <span className="text-xs font-medium text-primary">
+                      {enrolled ? "Inscrito ✓" : "Ver detalles →"}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </button>
+          );
+        })}
+      </div>
+      <CourseDialog course={selected} open={!!selected} onOpenChange={o => !o && setSelected(null)} mode="preview" />
+    </>
   );
 }
 
 function LearningTab() {
   const { enrolledIds } = useAuth();
+  const [selected, setSelected] = useState<Course | null>(null);
   const mine = COURSES.filter(c => enrolledIds.includes(c.id));
   if (mine.length === 0) {
     return (
@@ -93,27 +123,199 @@ function LearningTab() {
     );
   }
   return (
-    <div className="grid gap-4">
-      {mine.map(c => (
-        <Card key={c.id}>
-          <CardContent className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 p-4">
-            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-lg text-primary" style={{ background: "var(--brand-soft)" }}>
-              <BookOpen className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">{c.category}</p>
-              <p className="truncate font-semibold">{c.title}</p>
-              <div className="mt-2 h-2 w-full max-w-xs overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-primary" style={{ width: `${25 + (c.id * 7) % 60}%` }} />
+    <>
+      <div className="grid gap-4">
+        {mine.map(c => (
+          <Card key={c.id}>
+            <CardContent className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 p-4">
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-lg text-primary" style={{ background: "var(--brand-soft)" }}>
+                <BookOpen className="h-5 w-5" />
               </div>
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">{c.category} · {c.flexible ? "Horarios flexibles" : c.schedule}</p>
+                <p className="truncate font-semibold">{c.title}</p>
+                <div className="mt-2 h-2 w-full max-w-xs overflow-hidden rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${25 + (c.id * 7) % 60}%` }} />
+                </div>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => setSelected(c)}>Continuar</Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <CourseDialog course={selected} open={!!selected} onOpenChange={o => !o && setSelected(null)} mode="enrolled" />
+    </>
+  );
+}
+
+function CourseDialog({
+  course, open, onOpenChange, mode,
+}: {
+  course: Course | null;
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  mode: "preview" | "enrolled";
+}) {
+  const { enrolledIds, enroll, unenroll } = useAuth();
+  const [confirmLeave, setConfirmLeave] = useState(false);
+  if (!course) return null;
+  const isEnrolled = enrolledIds.includes(course.id);
+  const showEnrolledView = mode === "enrolled" || isEnrolled;
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">{course.category}</Badge>
+              <Badge variant="outline">{course.level}</Badge>
+              {course.flexible && <Badge className="bg-amber-500 text-white hover:bg-amber-500">Horarios flexibles</Badge>}
+              {course.tag && <Badge>{course.tag}</Badge>}
             </div>
-            <Button size="sm" variant="outline">Continuar</Button>
-          </CardContent>
-        </Card>
-      ))}
+            <DialogTitle className="mt-2 text-2xl">{course.title}</DialogTitle>
+            <DialogDescription>Por {course.instructor} · {course.instructorBio}</DialogDescription>
+          </DialogHeader>
+
+          <div className="grid grid-cols-2 gap-3 rounded-lg border p-3 text-sm sm:grid-cols-4">
+            <InfoCell icon={<Clock className="h-4 w-4" />} label="Duración" value={`${course.hours} h`} />
+            <InfoCell icon={<CalendarClock className="h-4 w-4" />} label="Horario" value={course.flexible ? "Flexible" : course.schedule} />
+            <InfoCell icon={<Users className="h-4 w-4" />} label="Estudiantes" value={`${course.students}`} />
+            <InfoCell icon={<Star className="h-4 w-4" />} label="Rating" value={`${course.rating ?? "—"}`} />
+          </div>
+
+          {!showEnrolledView ? (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">{course.longDescription}</p>
+              <div>
+                <h4 className="text-sm font-semibold">Lo que aprenderás</h4>
+                <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
+                  {course.learnings.map(l => (
+                    <li key={l} className="flex items-start gap-2 text-sm">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />{l}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold">Requisitos</h4>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+                  {course.requirements.map(r => <li key={r}>{r}</li>)}
+                </ul>
+              </div>
+              <DialogFooter className="gap-2 sm:justify-between">
+                <span className="text-2xl font-bold text-primary">{formatL(course.price)}</span>
+                <Button
+                  onClick={() => { enroll(course.id); onOpenChange(false); }}
+                  disabled={isEnrolled}
+                >
+                  {isEnrolled ? "Ya inscrito" : "Inscribirme ahora"}
+                </Button>
+              </DialogFooter>
+            </div>
+          ) : (
+            <Tabs defaultValue="content" className="mt-2">
+              <TabsList className="w-full justify-start overflow-x-auto">
+                <TabsTrigger value="content"><PlayCircle className="mr-1.5 h-4 w-4" />Contenido</TabsTrigger>
+                <TabsTrigger value="videos"><PlayCircle className="mr-1.5 h-4 w-4" />Videos</TabsTrigger>
+                <TabsTrigger value="tasks"><FileText className="mr-1.5 h-4 w-4" />Tareas</TabsTrigger>
+                <TabsTrigger value="about">Info</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="content" className="mt-4 space-y-2">
+                {course.lessons.map((l, i) => (
+                  <div key={i} className="flex items-center justify-between rounded-lg border p-3">
+                    <div className="flex items-center gap-3">
+                      <span className="grid h-8 w-8 place-items-center rounded-full bg-muted text-xs font-semibold">{i + 1}</span>
+                      <div>
+                        <p className="text-sm font-medium">{l.title}</p>
+                        <p className="text-xs text-muted-foreground">{l.duration}</p>
+                      </div>
+                    </div>
+                    <Button size="sm" variant="ghost">Ver</Button>
+                  </div>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="videos" className="mt-4 grid gap-3 sm:grid-cols-2">
+                {course.lessons.map((l, i) => (
+                  <div key={i} className="overflow-hidden rounded-lg border">
+                    <div className="grid aspect-video place-items-center bg-muted text-primary">
+                      <PlayCircle className="h-10 w-10" />
+                    </div>
+                    <div className="p-3">
+                      <p className="text-sm font-medium">{l.title}</p>
+                      <p className="text-xs text-muted-foreground">{l.duration}</p>
+                    </div>
+                  </div>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="tasks" className="mt-4 space-y-3">
+                {course.tasks.map((t, i) => (
+                  <div key={i} className="rounded-lg border p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold">{t.title}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">{t.description}</p>
+                      </div>
+                      <Badge variant="outline" className="shrink-0">Entrega en {t.dueInDays}d</Badge>
+                    </div>
+                    <Button size="sm" variant="outline" className="mt-3">Entregar tarea</Button>
+                  </div>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="about" className="mt-4 space-y-3 text-sm">
+                <p className="text-muted-foreground">{course.longDescription}</p>
+                <div>
+                  <h4 className="font-semibold">Instructor</h4>
+                  <p className="text-muted-foreground">{course.instructor} — {course.instructorBio}</p>
+                </div>
+              </TabsContent>
+
+              <DialogFooter className="mt-4">
+                <Button variant="destructive" onClick={() => setConfirmLeave(true)}>
+                  <LogOut className="mr-2 h-4 w-4" />Darme de baja del curso
+                </Button>
+              </DialogFooter>
+            </Tabs>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={confirmLeave} onOpenChange={setConfirmLeave}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro de darte de baja del curso?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Perderás el acceso a los contenidos, videos y tareas de <strong>{course.title}</strong>. Puedes volver a inscribirte cuando quieras.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { unenroll(course.id); setConfirmLeave(false); onOpenChange(false); }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sí, darme de baja
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
+function InfoCell({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div>
+      <p className="flex items-center gap-1 text-xs text-muted-foreground">{icon}{label}</p>
+      <p className="mt-0.5 text-sm font-semibold">{value}</p>
     </div>
   );
 }
+
 
 function TeachTab() {
   const { user, upgradeToPro, customCourses, addCustomCourse, removeCustomCourse, updateCustomCourse } = useAuth();
