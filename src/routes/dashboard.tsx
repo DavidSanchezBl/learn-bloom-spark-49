@@ -10,7 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useAuth, type CustomCourse } from "@/lib/auth";
 import { COURSES, formatL } from "@/lib/courses";
-import { Plus, Trash2, Sparkles, BookOpen, GraduationCap } from "lucide-react";
+import { Plus, Trash2, Sparkles, BookOpen, GraduationCap, UserCircle2, Check } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({ component: Dashboard });
 
@@ -38,11 +38,13 @@ function Dashboard() {
             <TabsTrigger value="explore"><BookOpen className="mr-2 h-4 w-4" />Explorar cursos</TabsTrigger>
             <TabsTrigger value="learning"><GraduationCap className="mr-2 h-4 w-4" />Mis aprendizajes</TabsTrigger>
             {isInstructor && <TabsTrigger value="teach"><Sparkles className="mr-2 h-4 w-4" />Mi espacio</TabsTrigger>}
+            <TabsTrigger value="profile"><UserCircle2 className="mr-2 h-4 w-4" />Mi perfil</TabsTrigger>
           </TabsList>
 
           <TabsContent value="explore" className="mt-6"><ExploreTab /></TabsContent>
           <TabsContent value="learning" className="mt-6"><LearningTab /></TabsContent>
           {isInstructor && <TabsContent value="teach" className="mt-6"><TeachTab /></TabsContent>}
+          <TabsContent value="profile" className="mt-6"><ProfileTab /></TabsContent>
         </Tabs>
       </div>
     </div>
@@ -216,6 +218,119 @@ function TeachTab() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ProfileTab() {
+  const { user, updateProfile } = useAuth();
+  const [fullName, setFullName] = useState(user?.fullName ?? "");
+  const [age, setAge] = useState(String(user?.age ?? ""));
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  if (!user) return null;
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSaved(false);
+    const trimmed = fullName.trim();
+    if (trimmed.length < 3 || trimmed.length > 60) {
+      setError("El nombre debe tener entre 3 y 60 caracteres.");
+      return;
+    }
+    const ageNum = parseInt(age, 10);
+    if (Number.isNaN(ageNum) || ageNum < 10 || ageNum > 100) {
+      setError("La edad debe estar entre 10 y 100 años.");
+      return;
+    }
+    if (password.length > 0) {
+      if (password.length < 6 || password.length > 40) {
+        setError("La contraseña debe tener entre 6 y 40 caracteres.");
+        return;
+      }
+      if (password !== confirm) {
+        setError("Las contraseñas no coinciden.");
+        return;
+      }
+    }
+    const res = updateProfile({
+      fullName: trimmed,
+      age: ageNum,
+      password: password || undefined,
+    });
+    if (!res.ok) {
+      setError(res.error ?? "No se pudo actualizar el perfil.");
+      return;
+    }
+    setPassword("");
+    setConfirm("");
+    setSaved(true);
+  };
+
+  const roleLabel =
+    user.role === "instructor_pro" ? "Instructor Pro" : user.role === "instructor" ? "Instructor" : "Estudiante";
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
+      <Card className="lg:w-72">
+        <CardContent className="flex flex-col items-center gap-3 p-6 text-center">
+          <div
+            className="grid h-20 w-20 place-items-center rounded-full text-primary"
+            style={{ background: "var(--brand-soft)" }}
+          >
+            <UserCircle2 className="h-10 w-10" />
+          </div>
+          <div>
+            <p className="font-semibold">{user.fullName}</p>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
+          </div>
+          <Badge variant="secondary">{roleLabel}</Badge>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-6">
+          <h2 className="text-lg font-semibold">Editar mi perfil</h2>
+          <p className="text-sm text-muted-foreground">Actualiza tu información personal cuando lo necesites.</p>
+          <form onSubmit={submit} className="mt-5 space-y-4">
+            <div className="space-y-1.5">
+              <Label>Correo electrónico</Label>
+              <Input value={user.email} disabled />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>Nombre completo</Label>
+                <Input value={fullName} onChange={e => setFullName(e.target.value)} maxLength={60} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Edad</Label>
+                <Input type="number" min={10} max={100} value={age} onChange={e => setAge(e.target.value)} />
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>Nueva contraseña</Label>
+                <Input type="password" value={password} onChange={e => setPassword(e.target.value)} maxLength={40} placeholder="Dejar vacío para no cambiar" />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Confirmar contraseña</Label>
+                <Input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} maxLength={40} />
+              </div>
+            </div>
+            {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+            {saved && (
+              <p className="flex items-center gap-1.5 text-sm font-medium text-primary">
+                <Check className="h-4 w-4" /> Perfil actualizado correctamente.
+              </p>
+            )}
+            <Button type="submit">Guardar cambios</Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
