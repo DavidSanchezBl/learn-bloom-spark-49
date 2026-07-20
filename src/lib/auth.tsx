@@ -22,6 +22,7 @@ interface AuthState {
   updateProfile: (patch: { fullName?: string; age?: number; password?: string }) => { ok: boolean; error?: string };
   enrolledIds: number[];
   enroll: (id: number) => void;
+  unenroll: (id: number) => void;
   customCourses: CustomCourse[];
   addCustomCourse: (c: Omit<CustomCourse, "id" | "instructor">) => void;
   updateCustomCourse: (id: string, patch: Partial<CustomCourse>) => void;
@@ -129,6 +130,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!user) return;
       if (enrolledIds.includes(id)) return;
       const next = [...enrolledIds, id];
+      setEnrolled(next);
+      persistEnroll(user.email, next);
+    },
+    unenroll: (id) => {
+      if (!user) return;
+      const next = enrolledIds.filter(x => x !== id);
       setEnrolled(next);
       persistEnroll(user.email, next);
     },
