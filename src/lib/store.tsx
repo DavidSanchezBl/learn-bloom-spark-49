@@ -128,7 +128,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     upsertProfile: (pr) => update(p => ({ ...p, profiles: { ...p.profiles, [pr.email]: pr } })),
   };
 
-  if (!ready) return null;
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
