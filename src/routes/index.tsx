@@ -25,7 +25,8 @@ function iconFor(key: string) {
 function Landing() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const goTo = (to: "/register" | "/dashboard") => user ? navigate({ to: "/dashboard" }) : navigate({ to });
+  const goTo = (to: "/register" | "/dashboard", opts?: { role?: "student" | "instructor"; pro?: boolean }) =>
+    user ? navigate({ to: "/dashboard" }) : navigate({ to, search: opts });
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -148,7 +149,7 @@ function Landing() {
                 </li>
               ))}
             </ul>
-            <Button size="lg" className="mt-8 rounded-full px-8" onClick={() => goTo("/register")}>Registrarme como instructor</Button>
+            <Button size="lg" className="mt-8 rounded-full px-8" onClick={() => goTo("/register", { role: "instructor" })}>Registrarme como instructor</Button>
           </ScrollReveal>
           <ScrollReveal>
             <div className="rounded-2xl border bg-card p-9 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
@@ -168,7 +169,7 @@ function Landing() {
                   </li>
                 ))}
               </ul>
-              <Button className="mt-6 w-full rounded-full" onClick={() => goTo("/register")}>
+              <Button className="mt-6 w-full rounded-full" onClick={() => goTo("/register", { role: "instructor", pro: true })}>
                   <Crown className="mr-2 h-4 w-4" /> Activar Pro
                 </Button>
               <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
@@ -236,7 +237,7 @@ function Landing() {
                   <UserPlus className="mr-2 h-4 w-4" /> Soy estudiante
                 </Button>
               <Button size="lg" className="rounded-full px-8 text-white hover:opacity-90"
-                  style={{ background: "var(--accent)" }} onClick={() => goTo("/register")}>
+                  style={{ background: "var(--accent)" }} onClick={() => goTo("/register", { role: "instructor" })}>
                   <GraduationCap className="mr-2 h-4 w-4" /> Soy instructor
                 </Button>
             </div>

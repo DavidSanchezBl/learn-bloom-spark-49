@@ -9,17 +9,24 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth, type Role } from "@/lib/auth";
 
-export const Route = createFileRoute("/register")({ component: RegisterPage });
+export const Route = createFileRoute("/register")({
+  validateSearch: () => ({
+    role: "student" as "student" | "instructor",
+    pro: false as boolean,
+  }),
+  component: RegisterPage,
+});
 
 function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const [email, setEmail] = useState("");
   const [fullName, setName] = useState("");
   const [password, setPassword] = useState("");
   const [age, setAge] = useState("");
-  const [role, setRole] = useState<Role>("student");
-  const [pro, setPro] = useState(false);
+  const [role, setRole] = useState<Role>(search.role);
+  const [pro, setPro] = useState(search.pro);
   const [error, setError] = useState("");
 
   const submit = (e: React.FormEvent) => {
