@@ -194,8 +194,10 @@ function Landing() {
             {COURSES.map((c, i) => (
               <ScrollReveal key={c.id} delay={(i % 3) * 100}>
                 <div className="group h-full overflow-hidden rounded-2xl border bg-card shadow-sm transition hover:-translate-y-2 hover:shadow-lg">
-                  <div className="grid h-40 place-items-center text-primary" style={{ background: "var(--brand-soft)" }}>
-                    {iconFor(c.icon)}
+                  <div className="h-40 bg-cover bg-center" style={{ backgroundImage: `url(${c.image})` }} aria-hidden>
+                    <div className="grid h-full w-full place-items-center bg-black/20 text-white">
+                      {iconFor(c.icon ?? "")}
+                    </div>
                   </div>
                   <div className="p-6">
                     {c.tag && (
