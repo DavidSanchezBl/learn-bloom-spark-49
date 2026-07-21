@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,9 @@ import {
 export function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const onDashboard = location.pathname === "/dashboard";
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
@@ -30,15 +32,14 @@ export function Navbar() {
         <nav className="flex items-center gap-2">
           {user ? (
             <>
-              <Link to="/dashboard" className="hidden text-sm text-muted-foreground hover:text-foreground sm:inline">
-                Mis cursos
-              </Link>
-              <span className="hidden rounded-full bg-muted px-3 py-1 text-xs font-medium sm:inline">
+              {!onDashboard && (
+                <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+                  Volver al campus
+                </Link>
+              )}
+              <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
                 {user.role === "instructor_pro" ? "Instructor Pro" : user.role === "instructor" ? "Instructor" : "Estudiante"}
               </span>
-              <Link to="/dashboard" className="hidden text-sm text-muted-foreground hover:text-foreground sm:inline">
-                Mi perfil
-              </Link>
 
               <Button variant="ghost" size="sm" onClick={() => setConfirmOpen(true)}>
                 <LogOut className="mr-1 h-4 w-4" />

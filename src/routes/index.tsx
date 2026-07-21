@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { COURSES, formatL, PRO_PRICE_LEMPIRAS } from "@/lib/courses";
+import { useAuth } from "@/lib/auth";
 import {
   Rocket, PlayCircle, UserPlus, Search, Handshake, CheckCircle2, GraduationCap,
   Headphones, Wrench, LineChart, Palette, Zap, Clock, Users, Tag, Star, Crown, Gift, ArrowRight,
@@ -22,6 +23,9 @@ function iconFor(key: string) {
 }
 
 function Landing() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const goTo = (to: "/register" | "/dashboard") => user ? navigate({ to: "/dashboard" }) : navigate({ to });
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -40,11 +44,9 @@ function Landing() {
               El Saber HN conecta estudiantes con instructores verificados de Honduras. Clases virtuales o presenciales, pagos en lempiras y horarios flexibles.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/register">
-                <Button size="lg" className="rounded-full px-8">
+              <Button size="lg" className="rounded-full px-8" onClick={() => goTo("/register")}>
                   <Rocket className="mr-2 h-4 w-4" /> Empieza ahora
                 </Button>
-              </Link>
               <a href="#como-funciona">
                 <Button size="lg" variant="outline" className="rounded-full border-2 px-8">
                   <PlayCircle className="mr-2 h-4 w-4" /> Cómo funciona
@@ -146,9 +148,7 @@ function Landing() {
                 </li>
               ))}
             </ul>
-            <Link to="/register">
-              <Button size="lg" className="mt-8 rounded-full px-8">Registrarme como instructor</Button>
-            </Link>
+            <Button size="lg" className="mt-8 rounded-full px-8" onClick={() => goTo("/register")}>Registrarme como instructor</Button>
           </ScrollReveal>
           <ScrollReveal>
             <div className="rounded-2xl border bg-card p-9 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
@@ -168,11 +168,9 @@ function Landing() {
                   </li>
                 ))}
               </ul>
-              <Link to="/register">
-                <Button className="mt-6 w-full rounded-full">
+              <Button className="mt-6 w-full rounded-full" onClick={() => goTo("/register")}>
                   <Crown className="mr-2 h-4 w-4" /> Activar Pro
                 </Button>
-              </Link>
               <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
                 <Gift className="h-3.5 w-3.5" /> Primeros 3 meses gratis
               </p>
@@ -234,17 +232,13 @@ function Landing() {
               Únete a El Saber HN hoy y forma parte de la comunidad educativa que está transformando Honduras.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <Link to="/register">
-                <Button size="lg" className="rounded-full bg-white px-8 text-primary hover:bg-white/90">
+              <Button size="lg" className="rounded-full bg-white px-8 text-primary hover:bg-white/90" onClick={() => goTo("/register")}>
                   <UserPlus className="mr-2 h-4 w-4" /> Soy estudiante
                 </Button>
-              </Link>
-              <Link to="/register">
-                <Button size="lg" className="rounded-full px-8 text-white hover:opacity-90"
-                  style={{ background: "var(--accent)" }}>
+              <Button size="lg" className="rounded-full px-8 text-white hover:opacity-90"
+                  style={{ background: "var(--accent)" }} onClick={() => goTo("/register")}>
                   <GraduationCap className="mr-2 h-4 w-4" /> Soy instructor
                 </Button>
-              </Link>
             </div>
           </ScrollReveal>
         </div>
