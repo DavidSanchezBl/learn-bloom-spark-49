@@ -35,6 +35,7 @@ export interface Course {
   lessons: CourseLesson[];
   tasks: CourseTask[];
   builtin?: boolean;
+  featured?: boolean;
 }
 
 const img = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=800&q=70`;
@@ -63,7 +64,7 @@ export const BUILTIN_COURSES: Course[] = [
       { title: "Grabación de saludo profesional", description: "Sube un audio de 60 seg presentándote como agente.", dueInDays: 3 },
       { title: "Role-play escrito", description: "Redacta un diálogo resolviendo un reclamo de facturación.", dueInDays: 7 },
     ],
-    builtin: true,
+    builtin: true, featured: true,
   },
   {
     id: "c2", title: "Reparación de celulares", category: "Oficio técnico", instructor: "Carlos Reyes",
@@ -86,7 +87,7 @@ export const BUILTIN_COURSES: Course[] = [
     tasks: [
       { title: "Reporte de diagnóstico", description: "Diagnostica un equipo real y sube el informe.", dueInDays: 5 },
     ],
-    builtin: true,
+    builtin: true, featured: true,
   },
   {
     id: "c3", title: "Matemáticas para ingeniería", category: "Nivelación", instructor: "Laura Gómez",
@@ -110,7 +111,7 @@ export const BUILTIN_COURSES: Course[] = [
       { title: "Ejercicios de álgebra", description: "Resuelve 20 problemas del cuadernillo.", dueInDays: 4 },
       { title: "Proyecto final", description: "Modela un problema real con derivadas.", dueInDays: 14 },
     ],
-    builtin: true,
+    builtin: true, featured: true,
   },
   {
     id: "c4", title: "Diseño gráfico con Canva", category: "Diseño", instructor: "Diego Martínez",
@@ -133,7 +134,7 @@ export const BUILTIN_COURSES: Course[] = [
     tasks: [
       { title: "Kit de marca", description: "Diseña logo, paleta y 3 publicaciones.", dueInDays: 7 },
     ],
-    builtin: true,
+    builtin: true, featured: true,
   },
   {
     id: "c5", title: "Introducción a Python", category: "Programación", instructor: "Ana Reyes",
@@ -157,7 +158,7 @@ export const BUILTIN_COURSES: Course[] = [
       { title: "Reto de listas", description: "Resuelve 10 ejercicios de manipulación.", dueInDays: 5 },
       { title: "Mini API", description: "Publica una API REST con 3 endpoints.", dueInDays: 12 },
     ],
-    builtin: true,
+    builtin: true, featured: true,
   },
   {
     id: "c6", title: "Excel avanzado y dashboards", category: "Productividad", instructor: "Roberto Castillo",
@@ -179,7 +180,7 @@ export const BUILTIN_COURSES: Course[] = [
     tasks: [
       { title: "Dashboard de ventas", description: "Construye un dashboard con datos ficticios.", dueInDays: 7 },
     ],
-    builtin: true,
+    builtin: true, featured: true,
   },
   {
     id: "c7", title: "Marketing digital 360°", category: "Negocios", instructor: "Lucía Paredes",
@@ -203,7 +204,7 @@ export const BUILTIN_COURSES: Course[] = [
       { title: "Plan de contenido", description: "Diseña un plan mensual de contenido.", dueInDays: 7 },
       { title: "Campaña real", description: "Lanza una campaña con $5 de prueba.", dueInDays: 14 },
     ],
-    builtin: true,
+    builtin: true, featured: true,
   },
   {
     id: "c8", title: "Fotografía con celular", category: "Arte", instructor: "Diego Fuentes",
@@ -225,7 +226,7 @@ export const BUILTIN_COURSES: Course[] = [
     tasks: [
       { title: "Serie fotográfica", description: "Publica 5 fotos con el mismo concepto.", dueInDays: 6 },
     ],
-    builtin: true,
+    builtin: true, featured: true,
   },
   {
     id: "c9", title: "Guitarra desde cero", category: "Música", instructor: "Sofía Ramírez",
@@ -247,7 +248,7 @@ export const BUILTIN_COURSES: Course[] = [
     tasks: [
       { title: "Video tocando", description: "Grábate tocando una canción del curso.", dueInDays: 10 },
     ],
-    builtin: true,
+    builtin: true, featured: true,
   },
   {
     id: "c10", title: "Finanzas personales", category: "Negocios", instructor: "Patricia Solís",
@@ -269,7 +270,7 @@ export const BUILTIN_COURSES: Course[] = [
     tasks: [
       { title: "Tu presupuesto real", description: "Construye tu presupuesto del próximo mes.", dueInDays: 4 },
     ],
-    builtin: true,
+    builtin: true, featured: true,
   },
 ];
 

@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/lib/auth";
 import { useStore } from "@/lib/store";
 import { formatL, DEFAULT_CATEGORIES, type Course, type CourseLesson, type CourseTask } from "@/lib/courses";
-import { Plus, Trash2, Sparkles, BookOpen, GraduationCap, UserCircle2, Check, Clock, CalendarClock, Users, Star, PlayCircle, FileText, LogOut, Search, MessageSquare, Radio, Video, Pencil, Send, X } from "lucide-react";
+import { Plus, Trash2, Sparkles, BookOpen, GraduationCap, UserCircle2, Check, Clock, CalendarClock, Users, Star, PlayCircle, FileText, LogOut, Search, MessageSquare, Radio, Video, Pencil, Send, X, Crown, TrendingUp, Award, BarChart3, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({ component: Dashboard });
 
@@ -47,12 +47,14 @@ function Dashboard() {
             <TabsTrigger value="explore"><BookOpen className="mr-2 h-4 w-4" />Explorar cursos</TabsTrigger>
             <TabsTrigger value="learning"><GraduationCap className="mr-2 h-4 w-4" />Mis aprendizajes</TabsTrigger>
             {isInstructor && <TabsTrigger value="teach"><Sparkles className="mr-2 h-4 w-4" />Mi espacio</TabsTrigger>}
+            {isInstructor && <TabsTrigger value="plans"><Crown className="mr-2 h-4 w-4" />Planes</TabsTrigger>}
             <TabsTrigger value="profile"><UserCircle2 className="mr-2 h-4 w-4" />Mi perfil</TabsTrigger>
           </TabsList>
 
           <TabsContent value="explore" className="mt-6"><ExploreTab /></TabsContent>
           <TabsContent value="learning" className="mt-6"><LearningTab /></TabsContent>
           {isInstructor && <TabsContent value="teach" className="mt-6"><TeachTab /></TabsContent>}
+          {isInstructor && <TabsContent value="plans" className="mt-6"><PlansTab /></TabsContent>}
           <TabsContent value="profile" className="mt-6"><ProfileTab /></TabsContent>
         </Tabs>
       </div>
@@ -77,6 +79,10 @@ function ExploreTab() {
     const okCat = cat === "all" || c.category === cat;
     const okQ = !q || c.title.toLowerCase().includes(q.toLowerCase()) || c.instructor.toLowerCase().includes(q.toLowerCase());
     return okCat && okQ;
+  }).sort((a, b) => {
+    const aRank = a.featured ? 0 : a.builtin ? 1 : 2;
+    const bRank = b.featured ? 0 : b.builtin ? 1 : 2;
+    return aRank - bRank;
   });
 
   return (
@@ -107,7 +113,14 @@ function ExploreTab() {
             return (
               <button key={c.id} type="button" onClick={() => setSelected(c)} className="group text-left">
                 <Card className="h-full overflow-hidden transition group-hover:shadow-md group-hover:-translate-y-0.5">
-                  <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${c.image})` }} />
+                  <div className="relative h-32 bg-cover bg-center" style={{ backgroundImage: `url(${c.image})` }}>
+                    {c.featured && !c.builtin && (
+                      <span className="absolute left-2 top-2 rounded-full bg-amber-400 px-2 py-0.5 text-xs font-bold text-amber-950 shadow">Destacado</span>
+                    )}
+                    {!c.featured && !c.builtin && (
+                      <span className="absolute left-2 top-2 rounded-full bg-blue-500 px-2 py-0.5 text-xs font-bold text-white shadow">Nuevo</span>
+                    )}
+                  </div>
                   <CardContent className="p-5">
                     <div className="flex items-center justify-between">
                       <p className="text-xs text-muted-foreground">{c.category} · {c.level}</p>
@@ -591,20 +604,13 @@ function TeachTab() {
       instructor: user.fullName,
       instructorEmail: user.email,
       instructorBio: "Instructor de El Saber HN",
+      featured: isPro,
     };
     setEditing(c);
   };
 
   return (
     <div className="space-y-6">
-      {!isPro && (
-        <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
-          <p className="text-sm font-medium">Desbloquea Instructor Pro</p>
-          <p className="mt-1 text-xs text-muted-foreground">Publica cursos ilimitados con imágenes personalizadas.</p>
-          <Button size="sm" className="mt-3" onClick={upgradeToPro}>Activar Pro {formatL(250)}/mes</Button>
-        </div>
-      )}
-
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Mis cursos publicados ({mine.length})</h2>
         <Button onClick={startNew} disabled={!isPro}><Plus className="mr-2 h-4 w-4" />Nuevo curso</Button>
@@ -621,7 +627,14 @@ function TeachTab() {
             const { avg, count } = store.averageRating(c.id);
             return (
               <Card key={c.id}>
-                <div className="h-28 rounded-t-lg bg-cover bg-center" style={{ backgroundImage: `url(${c.image})` }} />
+                <div className="relative h-28 rounded-t-lg bg-cover bg-center" style={{ backgroundImage: `url(${c.image})` }}>
+                  {c.featured && (
+                    <span className="absolute left-2 top-2 rounded-full bg-amber-400 px-2 py-0.5 text-xs font-bold text-amber-950 shadow">Destacado</span>
+                  )}
+                  {!c.featured && (
+                    <span className="absolute left-2 top-2 rounded-full bg-blue-500 px-2 py-0.5 text-xs font-bold text-white shadow">Nuevo</span>
+                  )}
+                </div>
                 <CardContent className="p-4">
                   <p className="text-xs text-muted-foreground">{c.category}</p>
                   <p className="truncate font-semibold">{c.title}</p>
@@ -630,6 +643,11 @@ function TeachTab() {
                     <span className="inline-flex items-center gap-1"><Star className="h-3 w-3" />{count > 0 ? avg.toFixed(1) : "—"} ({count})</span>
                     <span className="font-semibold text-primary">{formatL(c.price)}</span>
                   </div>
+                  {isPro && (
+                    <div className="mt-2 rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
+                      <span className="inline-flex items-center gap-1"><BarChart3 className="h-3 w-3" />{students} alumno(s) inscrito(s)</span>
+                    </div>
+                  )}
                   <div className="mt-3 flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => setEditing(c)}><Pencil className="mr-1 h-3.5 w-3.5" />Editar</Button>
                     <Button size="icon" variant="ghost" onClick={() => store.removeCourse(c.id)}>
@@ -791,6 +809,119 @@ function CourseEditor({ course, onClose }: { course: Course; onClose: () => void
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// ----------------- Plans Tab -----------------
+
+function PlansTab() {
+  const { user, upgradeToPro } = useAuth();
+  if (!user) return null;
+  const isPro = user.role === "instructor_pro";
+
+  const freeFeatures = [
+    "Publicar cursos (limitado)",
+    "Etiqueta “Nuevo” en tus cursos",
+    "Posición al final del catálogo",
+    "Editor básico de lecciones",
+    "Foro de cada curso",
+    "Clases en vivo",
+  ];
+  const proFeatures = [
+    "Publica cursos ilimitados",
+    "Etiqueta “Destacado” en amarillo",
+    "Prioridad en búsquedas",
+    "Apareces en los primeros lugares",
+    "Estadísticas de alumnos por curso",
+    "Editor libre con imágenes personalizadas",
+    "Define tus propios precios",
+    "Soporte prioritario",
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">Compara tus planes</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Mira lo que ganas al pasar al plan Pro.</p>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        {/* Plan Gratis */}
+        <Card className={isPro ? "opacity-60" : ""}>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-muted"><BookOpen className="h-5 w-5" /></div>
+              <div>
+                <p className="text-lg font-semibold">Instructor Normal</p>
+                <p className="text-xs text-muted-foreground">Tu plan actual</p>
+              </div>
+            </div>
+            <p className="mt-4 text-3xl font-bold">Gratis</p>
+            <p className="text-sm text-muted-foreground">Sin costo mensual</p>
+            <ul className="mt-5 space-y-2.5">
+              {freeFeatures.map(f => (
+                <li key={f} className="flex items-start gap-2 text-sm">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />{f}
+                </li>
+              ))}
+            </ul>
+            {isPro ? (
+              <Badge variant="secondary" className="mt-5">Plan anterior</Badge>
+            ) : (
+              <Badge variant="secondary" className="mt-5">Plan activo</Badge>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Plan Pro */}
+        <Card className={isPro ? "border-primary" : "border-amber-400/60"}>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-amber-100 text-amber-600"><Crown className="h-5 w-5" /></div>
+              <div>
+                <p className="text-lg font-semibold">Instructor Pro</p>
+                <p className="text-xs text-muted-foreground">Para instructores que quieren crecer</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-baseline gap-2">
+              <p className="text-3xl font-bold">{formatL(250)}</p>
+              <p className="text-sm text-muted-foreground">/mes</p>
+            </div>
+            <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+              <Zap className="h-3 w-3" />3 meses gratis de prueba
+            </p>
+            <ul className="mt-5 space-y-2.5">
+              {proFeatures.map(f => (
+                <li key={f} className="flex items-start gap-2 text-sm">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />{f}
+                </li>
+              ))}
+            </ul>
+            {isPro ? (
+              <Badge className="mt-5 bg-amber-500 text-white hover:bg-amber-500"><Crown className="mr-1 h-3 w-3" />Plan activo</Badge>
+            ) : (
+              <Button className="mt-5 w-full bg-amber-500 text-white hover:bg-amber-600" onClick={upgradeToPro}>
+                <Crown className="mr-2 h-4 w-4" />Activar Pro con 3 meses gratis
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {!isPro && (
+        <div className="rounded-lg border border-amber-400/40 bg-amber-50 p-4 text-sm text-amber-900">
+          <p className="font-medium"><TrendingUp className="mr-1.5 inline h-4 w-4" />¿Por qué pasar a Pro?</p>
+          <p className="mt-1 text-amber-800">Tus cursos aparecerán con la etiqueta <strong className="text-amber-600">Destacado</strong> en amarillo y se mostrarán en los primeros lugares del catálogo. Los instructores normales solo reciben la etiqueta <strong className="text-blue-600">Nuevo</strong> y aparecen al final. Además, tendrás acceso a estadísticas detalladas de tus alumnos.</p>
+        </div>
+      )}
+
+      {isPro && (
+        <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
+          <p className="flex items-center gap-2 text-sm font-medium"><Award className="h-4 w-4 text-amber-500" />Tu plan Pro está activo</p>
+          <p className="mt-1 text-xs text-muted-foreground">Tus cursos se publican con etiqueta “Destacado”, aparecen en los primeros lugares y tienes acceso a estadísticas de alumnos.</p>
+        </div>
+      )}
+    </div>
   );
 }
 
