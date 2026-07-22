@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/lib/auth";
 import { useStore } from "@/lib/store";
 import { formatL, DEFAULT_CATEGORIES, type Course, type CourseLesson, type CourseTask } from "@/lib/courses";
@@ -623,7 +624,7 @@ function TeachTab() {
 
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Mis cursos publicados ({mine.length})</h2>
-        <Button onClick={startNew} disabled={!isPro}><Plus className="mr-2 h-4 w-4" />Nuevo curso</Button>
+        <Button onClick={startNew}><Plus className="mr-2 h-4 w-4" />Nuevo curso</Button>
       </div>
 
       {mine.length === 0 ? (
@@ -825,14 +826,13 @@ function CourseEditor({ course, onClose }: { course: Course; onClose: () => void
 // ----------------- Plans Tab -----------------
 
 function PlansTab() {
-  const { user, upgradeToPro } = useAuth();
+  const { user, upgradeToPro, downgradeToNormal } = useAuth();
   if (!user) return null;
   const isPro = user.role === "instructor_pro";
 
   const freeFeatures = [
-    "Publicar cursos (limitado)",
+    "Publicar cursos ilimitados",
     "Etiqueta “Nuevo” en tus cursos",
-    "Posición al final del catálogo",
     "Editor básico de lecciones",
     "Foro de cada curso",
     "Clases en vivo",
@@ -847,6 +847,11 @@ function PlansTab() {
     "Define tus propios precios",
     "Soporte prioritario",
   ];
+
+  const togglePro = () => {
+    if (isPro) downgradeToNormal();
+    else upgradeToPro();
+  };
 
   return (
     <div className="space-y-6">
@@ -900,20 +905,25 @@ function PlansTab() {
             <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
               <Zap className="h-3 w-3" />3 meses gratis de prueba
             </p>
-            <ul className="mt-5 space-y-2.5">
-              {proFeatures.map(f => (
-                <li key={f} className="flex items-start gap-2 text-sm">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />{f}
-                </li>
-              ))}
-            </ul>
-            {isPro ? (
-              <Badge className="mt-5 bg-amber-500 text-white hover:bg-amber-500"><Crown className="mr-1 h-3 w-3" />Plan activo</Badge>
-            ) : (
-              <Button className="mt-5 w-full bg-amber-500 text-white hover:bg-amber-600" onClick={upgradeToPro}>
-                <Crown className="mr-2 h-4 w-4" />Activar Pro con 3 meses gratis
-              </Button>
-            )}
+            <div className="mt-5 flex items-center justify-between rounded-lg border border-amber-400/40 bg-amber-50 p-3">
+              <div className="flex items-center gap-2">
+                <Crown className="h-5 w-5 text-amber-500" />
+                <div>
+                  <p className="text-sm font-semibold">Plan Pro {isPro ? "activo" : "inactivo"}</p>
+                  <p className="text-xs text-muted-foreground">Enciende para ver todos los beneficios</p>
+                </div>
+              </div>
+              <Switch checked={isPro} onCheckedChange={togglePro} />
+            </div>
+            <div className={`mt-4 transition-all duration-300 ${isPro ? "opacity-100 max-h-[600px]" : "opacity-0 max-h-0 overflow-hidden"}`}>
+              <ul className="space-y-2.5">
+                {proFeatures.map(f => (
+                  <li key={f} className="flex items-start gap-2 text-sm">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />{f}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </CardContent>
         </Card>
       </div>

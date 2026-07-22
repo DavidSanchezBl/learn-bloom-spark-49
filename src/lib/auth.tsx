@@ -19,6 +19,7 @@ interface AuthState {
   login: (email: string, password: string) => { ok: boolean; error?: string };
   logout: () => void;
   upgradeToPro: () => void;
+  downgradeToNormal: () => void;
   updateProfile: (patch: { fullName?: string; age?: number; password?: string }) => { ok: boolean; error?: string };
 }
 
@@ -77,6 +78,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         users[idx].role = "instructor_pro";
         writeUsers(users);
         setUser({ ...user, role: "instructor_pro" });
+      }
+    },
+    downgradeToNormal: () => {
+      if (!user) return;
+      const users = readUsers();
+      const idx = users.findIndex(u => u.email === user.email);
+      if (idx >= 0) {
+        users[idx].role = "instructor";
+        writeUsers(users);
+        setUser({ ...user, role: "instructor" });
       }
     },
     updateProfile: (patch) => {
