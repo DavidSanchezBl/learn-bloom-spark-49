@@ -80,9 +80,8 @@ function ExploreTab() {
     const okQ = !q || c.title.toLowerCase().includes(q.toLowerCase()) || c.instructor.toLowerCase().includes(q.toLowerCase());
     return okCat && okQ;
   }).sort((a, b) => {
-    const aRank = a.featured ? 0 : a.builtin ? 1 : 2;
-    const bRank = b.featured ? 0 : b.builtin ? 1 : 2;
-    return aRank - bRank;
+    const rank = (c: Course) => c.featured && !c.builtin ? 0 : c.builtin ? 1 : 2;
+    return rank(a) - rank(b);
   });
 
   return (
