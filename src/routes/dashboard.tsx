@@ -15,6 +15,7 @@ import { useAuth } from "@/lib/auth";
 import { useStore } from "@/lib/store";
 import { formatL, DEFAULT_CATEGORIES, type Course, type CourseLesson, type CourseTask } from "@/lib/courses";
 import { Plus, Trash2, Sparkles, BookOpen, GraduationCap, UserCircle2, Check, Clock, CalendarClock, Users, Star, PlayCircle, FileText, LogOut, Search, MessageSquare, Radio, Video, Pencil, Send, X, Crown, TrendingUp, Award, BarChart3, Zap } from "lucide-react";
+import { StudyTimeChart } from "@/components/StudyTimeChart";
 
 export const Route = createFileRoute("/dashboard")({ component: Dashboard });
 
@@ -608,8 +609,18 @@ function TeachTab() {
     setEditing(c);
   };
 
+  const totalStudents = mine.reduce((acc, c) => acc + (store.enrollments[c.id]?.length ?? 0), 0);
+
   return (
     <div className="space-y-6">
+      <StudyTimeChart
+        title={isPro ? "Tiempo de estudio de tus alumnos" : "Actividad de estudiantes en la plataforma"}
+        subtitle={isPro ? `Monitoreo en vivo · ${totalStudents} alumno(s) en tus cursos` : "Nivel de actividad de los estudiantes (datos generales)"}
+        base={isPro ? 45 : 18}
+        variance={isPro ? 25 : 12}
+        accent={isPro ? "#f59e0b" : "#3b82f6"}
+      />
+
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Mis cursos publicados ({mine.length})</h2>
         <Button onClick={startNew} disabled={!isPro}><Plus className="mr-2 h-4 w-4" />Nuevo curso</Button>
