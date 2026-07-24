@@ -1,0 +1,7 @@
+{
+  "source": "vite",
+  "template": "react",
+  "build": {
+    "script": "build"
+  }
+}

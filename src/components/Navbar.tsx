@@ -1,75 +1,82 @@
-import { Link, useNavigate, useLocation } from "@tanstack/react-router";
+import { ShoppingBag, Menu, X, GraduationCap } from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
-import { GraduationCap, LogOut } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Button } from "./ui";
+import { useCart } from "../cart";
+
+const links = [
+  { label: "Inicio", href: "#inicio" },
+  { label: "Cursos", href: "#cursos" },
+  { label: "Precios", href: "#precios" },
+  { label: "Para instructores", href: "#instructores" },
+  { label: "Blog", href: "#blog" },
+  { label: "Contacto", href: "#contacto" },
+];
 
 export function Navbar() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const onDashboard = location.pathname === "/dashboard";
-  return (
-    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground">
-            <GraduationCap className="h-5 w-5" />
-          </div>
-          <span className="text-lg font-semibold tracking-tight">El Saber HN</span>
-        </Link>
-        <nav className="flex items-center gap-2">
-          {user ? (
-            <>
-              {!onDashboard && (
-                <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
-                  Volver al campus
-                </Link>
-              )}
-              <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
-                {user.role === "instructor_pro" ? "Instructor Pro" : user.role === "instructor" ? "Instructor" : "Estudiante"}
-              </span>
+  const { count, setOpen } = useCart();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-              <Button variant="ghost" size="sm" onClick={() => setConfirmOpen(true)}>
-                <LogOut className="mr-1 h-4 w-4" />
-                <span>Cerrar sesión</span>
-              </Button>
-              <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>¿Está segura de cerrar sesión?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Se cerrará tu sesión actual y volverás a la página de inicio.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => { logout(); setConfirmOpen(false); navigate({ to: "/" }); }}>
-                      Sí, cerrar sesión
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </>
-          ) : (
-            <>
-              <Link to="/login"><Button variant="ghost" size="sm">Ingresar</Button></Link>
-              <Link to="/register"><Button size="sm">Registrarme</Button></Link>
-            </>
-          )}
-        </nav>
-      </div>
+  return (
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+        <a href="#inicio" className="flex items-center gap-2 font-bold text-primary">
+          <GraduationCap className="h-7 w-7" />
+          <span className="text-lg">EduPrix</span>
+        </a>
+
+        <div className="hidden items-center gap-6 md:flex">
+          {links.map(l => (
+            <a key={l.href} href={l.href} className="text-sm font-medium text-muted-foreground hover:text-foreground">
+              {l.label}
+            </a>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setOpen(true)}
+            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-secondary"
+            aria-label="Abrir carrito"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            {count > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-xs font-semibold text-white">
+                {count}
+              </span>
+            )}
+          </button>
+          <Button variant="outline" size="sm" className="hidden sm:inline-flex">Iniciar sesión</Button>
+          <Button size="sm" className="hidden sm:inline-flex">Registrarse</Button>
+          <button
+            onClick={() => setMobileOpen(o => !o)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-secondary md:hidden"
+            aria-label="Menú"
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+      </nav>
+
+      {mobileOpen && (
+        <div className="border-t border-border bg-background px-6 py-4 md:hidden">
+          <div className="flex flex-col gap-3">
+            {links.map(l => (
+              <a
+                key={l.href}
+                href={l.href}
+                onClick={() => setMobileOpen(false)}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
+                {l.label}
+              </a>
+            ))}
+            <div className="mt-2 flex gap-2">
+              <Button variant="outline" size="sm" className="flex-1">Iniciar sesión</Button>
+              <Button size="sm" className="flex-1">Registrarse</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
